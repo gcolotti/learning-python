@@ -17,7 +17,7 @@ class Todo(db.Model):
         return '<Task %r>' % self.id
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         task_content = request.form['content']
@@ -27,6 +27,8 @@ def index():
             db.session.commit()
             return redirect('/')
         except:
+            # TODO: is it needed rollback?
+            # TODO: How to redirect with a flash session message, e.i. telling that something went wrong
             db.session.rollback()
             return redirect('/')
     else:
@@ -39,6 +41,29 @@ def delete(id):
     task_to_delete = Todo.query.get_or_404(id)
     try:
         db.session.delete(task_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        # TODO: is it needed rollback?
+        # TODO: How to redirect with a flash session message, e.i. telling that something went wrong
+        db.session.rollback()
+        return redirect('/')
+
+
+@app.route('/edit/<int:id>', methods=['GET'])
+def edit(id):
+    task_to_edit = Todo.query.get_or_404(id)
+    try:
+        return render_template('edit.html', task=task_to_edit)
+    except:
+        return redirect('/')
+
+
+@app.route('/update/<int:id>', methods=['POST'])
+def update(id):
+    task_to_update = Todo.query.get_or_404(id)
+    try:
+        task_to_update.content = request.form['content']
         db.session.commit()
         return redirect('/')
     except:

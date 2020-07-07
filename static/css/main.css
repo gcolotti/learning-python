@@ -1,0 +1,14 @@
+body {
+    margin: 0;
+    font-family: Sans-serif;
+    width: 800px;
+    margin: auto;
+}
+
+table, tr, th, td {
+    border: 1px solid black;
+}
+
+td {
+    width: 150px;
+}
